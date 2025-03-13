@@ -12,12 +12,21 @@ For the font size to work, you need to have some font file in the "fonts/" folde
 
 ## How to use
 
-Insert correct parameters to `main.py`:
-* `count` = desired amount of bingo sheets
-* `midImg` = path to the desired middle image in `img/` directory (see example.jpg for reference)
-* `font` = path to the desired font in `fonts/` directory
+1. Add a desired font to `fonts/` and a desired image to `img/`.
+
+2. Insert correct parameters to `main.py`:
+    * `count` = desired amount of bingo sheets
+    * `midImg` = path to the desired middle image in `img/` directory (see example.jpg for reference)
+    * `font` = path to the desired font in `fonts/` directory
+
+3. Run the program
+
+~~~
+python main.py
+~~~
 
 If you want to use the program to run an actual Bingo, you can use the draw()-method to get the values out of the machine one by one:
+
 ~~~
 while b.nonEmpty():
     out = b.draw()
