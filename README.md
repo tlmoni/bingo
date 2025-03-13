@@ -1,37 +1,29 @@
 # Bingo
-A small program for running a basic custom Bingo-game and creating printable sheets that can be printed out for participants to use. 
+
+A program for running a basic custom Bingo-game and creating printable sheets that can be printed out for participants to use.
 
 ## Installation
-Install the used libraries with:   
-`pip install -r requirements.txt`
 
-For the font size to work, you need to have some font file installed in the "fonts/" folder, so go download your favourite font as a .ttf-file and put it there.
+Install dependencies
+
+    pip install -r requirements.txt
+
+For the font size to work, you need to have some font file in the "fonts/" folder. The font must be a .ttf-file.
 
 ## How to use
 
-You can import the module with   
-~~~
-from bingo import Bingo
-~~~
+Insert correct parameters to `main.py`:
+* `count` = desired amount of bingo sheets
+* `midImg` = path to the desired middle image in `img/` directory (see example.jpg for reference)
+* `font` = path to the desired font in `fonts/` directory
 
-To create a PDF sheet, first create a Bingo-object 
-and then create your PDF file with createPDF()  
+If you want to use the program to run an actual Bingo, you can use the draw()-method to get the values out of the machine one by one:
 ~~~
-b = Bingo()  
-b.createPDF(count=20, midImg="img/ITMKlogo.jpg", font="libel-suit-rg.ttf")
-~~~
-
-If you want to use it for running an actual Bingo, you can use the draw()-method to get the values out of the machine one by one   
-~~~
-while b.nonEmpty():   
-    out = b.draw()   
+while b.nonEmpty():
+    out = b.draw()
     print(out)
 ~~~
 
 ## Bingo sheet example
+
 ![PDF image](img/example.jpg)
-
-
-## Todo
-- Add logic to combining pictures to PDF's so they're automatically fitted to the page
-- Create a GUI and deploy somewhere

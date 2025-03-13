@@ -17,7 +17,7 @@ class Bingo():
 
     """
     Creates an array with all the uniquely named balls and shuffles them
-    Balls are named by giving them a unique number and prefixing it 
+    Balls are named by giving them a unique number and prefixing it
     by the letter that corresponds to the given column
     """
     def createBingo(self):
@@ -28,10 +28,10 @@ class Bingo():
                 out.append(f"{char}{i*length + j + 1}")
         self.balls = out
         self.shuffle()
-        
+
     """
     Either shuffles the given array or the balls of the current bingo-machine
-    
+
     :param arr: (optional) array of items to be shuffled
     """
     def shuffle(self, arr=[]):
@@ -42,7 +42,7 @@ class Bingo():
 
     """
     Checks if there are no more balls left
-    
+
     :returns True if there are no balls left else false
     """
     def isEmpty(self):
@@ -50,7 +50,7 @@ class Bingo():
 
     """
     Checks if there are any balls left
-    
+
     :returns True if there are balls left else false
     """
     def nonEmpty(self):
@@ -59,14 +59,14 @@ class Bingo():
     """
     Shuffles the remaining balls, selects one and removes it.
 
-    :returns either a string that is either a ball or error description 
+    :returns either a string that is either a ball or error description
     """
     def draw(self):
         if self.isEmpty():
             txt = "No more balls left to draw from!"
             if self.printing:
                 print(txt)
-            return txt  
+            return txt
         self.shuffle()
         ball = self.balls.pop()
         if self.printing:
@@ -77,7 +77,7 @@ class Bingo():
     Create a new 2-dimensional list with each column shuffled
     i.e. everything that falls under the same letter is mixed
     but each letter is kept separate
-    
+
     :returns 2-dimensional array with strings inside
     """
     def shuffledColumns(self):
@@ -92,17 +92,17 @@ class Bingo():
         return out
 
     """
-    Tries to automatically figure out a font size for the used boxSize. 
+    Tries to automatically figure out a font size for the used boxSize.
 
     :param fontName: path to the used font .ttf-file
     :param sizeRatio: float that tells how large the font should be as a ratio of self.boxSize
     :return: ImageFont
     """
     def defineFontSize(self, fontName="", sizeRatio=1):
-        fontSize = 0
+        fontSize = 1
         if fontName:
             font = ImageFont.truetype(os.path.join("fonts", fontName), fontSize)
-            while font.getsize("1")[1] / self.boxSize <= sizeRatio:
+            while font.getbbox("1")[3] / self.boxSize <= sizeRatio:
                 fontSize += 1
                 font = ImageFont.truetype(os.path.join("fonts", fontName), fontSize)
         else:
@@ -125,11 +125,11 @@ class Bingo():
         image = Image.new(mode='L', size=(width, height), color = 255)
         draw = ImageDraw.Draw(image)
         font = self.defineFontSize(font, 1.2)
-        
+
         # Draw letters at top
         for x, letter in enumerate(self.letters):
-            w, h = font.getsize(letter)
-            xPos = x * bSize + (bSize - w)/2
+            box = font.getbbox(letter)
+            xPos = x * bSize + (bSize - box[2])/2
             yPos = bSize // 2
             draw.text((xPos,yPos), letter, 64, font=font)
 
@@ -149,7 +149,7 @@ class Bingo():
                     draw.line(line, fill=128)
         del draw
         return image
-        
+
     """
     Draws randomized bingo-sheets. If a path to an image file
     is given, it's added as the middle point in every grid as
@@ -165,7 +165,7 @@ class Bingo():
         images = []
         bSize = self.boxSize
         mSize = self.marginSize
-        
+
         font = self.defineFontSize(font, 0.8)
 
         if midImg:
@@ -178,16 +178,16 @@ class Bingo():
             balls = self.shuffledColumns()
             for g in range(self.grids):
                 gridOffset = (self.rows * bSize + mSize) * g + self.marginSize * 2
-                for y in range(self.rows):  
+                for y in range(self.rows):
                     for x in range(self.cols):
                         msg = balls[x][y + self.rows * g][1:]
-                        w, h = font.getsize(msg)
-                        xPos = x * bSize + (bSize - w)/2
-                        yPos = y * bSize + gridOffset + (bSize - h)/2
+                        box = font.getbbox(msg)
+                        xPos = x * bSize + (bSize - box[2])/2
+                        yPos = y * bSize + gridOffset + (bSize - box[3])/2
 
                         draw.text((xPos,yPos), msg, 64, font=font)
 
-            if midImg:             
+            if midImg:
                 for g in range(self.grids):
                     gridOffset = (self.rows * bSize + mSize + 1) * g + self.marginSize * 2
                     xPos = bSize * (self.cols // 2) + 1
@@ -204,15 +204,15 @@ class Bingo():
 
     :param images: array of PIL Image objects
     :param angle: rotation angle as degrees
-    :returns: Array of PIL Images 
+    :returns: Array of PIL Images
     """
     def rotateImages(self, images, angle):
         out = [image.rotate(angle, expand=True) for image in images]
-        return out 
+        return out
 
     """
     Saves given list of images to the given path
-    
+
     :param images: array of PIL Image objects
     :param saveDir: path for saving the Images
     """
@@ -246,9 +246,9 @@ class Bingo():
 
     """
     Takes a list of PIL Images and organizes combining them into larger Images that can fit a PDF
-    
+
     :param images: List of PIL Images that get combined
-    :param heighLimit: Size limit for the 
+    :param heighLimit: Size limit for the
     """
     def combineImages(self, images, heightLimit):
         out = []
@@ -275,7 +275,7 @@ class Bingo():
     :param midImg: path to the image-file for bonus square
     :param font: path to the used font .ttf-file
     """
-    def createPDF(self, count, dir="img/out", midImg="", font=""):
+    def createPDF(self, count, dir="out", midImg="", font=""):
         pw, ph = 595, 842 #PDF width/height in pixels
         images = self.createNumberSheet(count, midImg, dir, font=font)
         if (dir):
@@ -289,7 +289,7 @@ class Bingo():
 
         cover = Image.open(dir + "0" + ".jpg")
         width, height = cover.size
-        
+
         pdf = FPDF(unit = "pt", format = [pw, ph])
         pdf.add_page()
 
@@ -303,4 +303,3 @@ class Bingo():
 
         output_path = os.path.join(dir, "print.pdf")
         pdf.output(output_path, "F")
-
